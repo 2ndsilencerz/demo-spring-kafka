@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafdrop
+  labels:
+    name: kafdrop
+spec:
+  selector:
+    matchLabels:
+      name: kafdrop
+  template:
+    metadata:
+      name: kafdrop
+      labels:
+        name: kafdrop
+    spec:
+      containers:
+        - name: kafdrop
+          image: docker.io/obsidiandynamics/kafdrop
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9000
+          env:
+            - name: KAFKA_BROKERCONNECT
+              value: kafka:9092
+            - name: SERVER_SERVLET_CONTEXTPATH
+              value: "/"
+          startupProbe:
+            httpGet:
+              port: 9000
+              path: /
+          livenessProbe:
+            httpGet:
+              port: 9000
+              path: /
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafdrop
+  labels:
+    name: kafdrop
+spec:
+  selector:
+    name: kafdrop
+  ports:
+    - port: 9000
+      targetPort: 9000
+      nodePort: 30900
+      name: main
+  type: NodePort

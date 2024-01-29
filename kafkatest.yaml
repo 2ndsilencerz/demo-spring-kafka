@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demokafka
+  labels:
+    name: demokafka
+spec:
+  selector:
+    matchLabels:
+      name: demokafka
+  template:
+    metadata:
+      name: demokafka
+      labels:
+        name: demokafka
+    spec:
+      containers:
+        - name: demokafka
+          image: docker.io/silencerz23/demokafka:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demokafka
+  labels:
+    name: demokafka
+spec:
+  selector:
+    name: demokafka
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30080
+      name: main
+  type: LoadBalancer
